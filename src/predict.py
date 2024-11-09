@@ -42,7 +42,7 @@ def sliding_window_prediction(model, image_path, patch_size=9, stride=5):
     with torch.no_grad():
         for y in range(0, image_tensor.shape[2] - patch_size + 1, stride):
             for x in range(0, image_tensor.shape[3] - patch_size + 1, stride):
-                
+
                 # 현재 위치에서 패치 추출
                 patch = image_tensor[:, :, y:y + patch_size, x:x + patch_size].to(device)
                 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     # 예측 수행
     test_image_path = get_path("data", "test", "fire", "image_964791745.jpg")
-    output_map = sliding_window_prediction(model, test_image_path, patch_size=9, stride=2)
+    output_map = sliding_window_prediction(model, test_image_path, patch_size=16, stride=2)
     print("슬라이딩 윈도우 예측 결과 맵:")
     print(output_map)
 
