@@ -65,8 +65,14 @@ model = model.to(device)
 print(f"모델 로드 완료: {model_load_path}")
 
 
-# 예측 수행 예제
+# 예측 수행
 test_image_path = get_path("data", "test", "sample_image.jpg")
 output_map = sliding_window_prediction(model, test_image_path, patch_size=50, stride=25)
 print("슬라이딩 윈도우 예측 결과 맵:")
 print(output_map)
+
+
+# 예측 결과 저장
+output_predictions_path = get_path("outputs", "predictions")
+np.save(output_predictions_path, output_map)
+print(f"예측 결과 저장 완료: {output_predictions_path}")

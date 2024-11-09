@@ -99,5 +99,5 @@ for epoch in range(config['train']['num_epochs']):
     print(f"Validation Accuracy: {accuracy}%")
 
 # 모델 저장
-torch.save(model.state_dict(), config['paths']['model_save_path'])
+torch.save(model.state_dict(), model_save_path)
 print(f"모델 저장 완료 : {model_save_path}")

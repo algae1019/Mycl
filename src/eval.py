@@ -54,4 +54,12 @@ def predict(image_path):
 
 # 테스트 예측
 test_image_path = get_path("data", "val", "fire", "sample_fire_image.jpg")
-print(f"Fire Probability: {predict(test_image_path)}")
+fire_probability = predict(test_image_path)
+print(f"Fire Probability: {fire_probability}")
+
+
+# 로그 파일에 저장
+logs_path = get_path("outputs", "logs")
+with open(logs_path, "w") as f:
+    f.write(f"Fire Probability: {fire_probability}\n")
+print(f"평가 결과 저장 완료: {logs_path}")
