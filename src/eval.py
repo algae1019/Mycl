@@ -48,10 +48,10 @@ def predict(image_path):
     image = preprocess_image(image_path)
     with torch.no_grad():
         output = model(image)
-        _, predicted = torch.max(output, 1)
-        return "fire" if predicted.item() == 0 else "no_fire"
+        probability = torch.sigmoid(output).item()
+        return probability
     
 
 # 테스트 예측
 test_image_path = get_path("data", "val", "fire", "sample_fire_image.jpg")
-print(predict(test_image_path))
+print(f"Fire Probability: {predict(test_image_path)}")

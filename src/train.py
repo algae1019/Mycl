@@ -27,8 +27,8 @@ model_save_path = get_path(config['paths']['model_save_path'])
 # 데이터 로더 불러오기
 train_loader, val_loader = get_loader(
     config['train']['batch_size'],
-    config['paths']['train_data'],
-    config['paths']['val_data']
+    train_data_path,
+    val_data_path
     )
 
 
@@ -38,11 +38,11 @@ class MyResNet50(nn.Module):
         super(MyResNet50, self).__init__()
         self.model = models.resnet50(pretrained=config['model']['pretrained'])
         self.model.fc = nn.Linear(self.model.fc.in_features, config['model']['num_classes'])
-        self.activation = nn.Sigmoid
+        self.activation = nn.Sigmoid()
 
     def forward(self, x):
-        x = self.model(x)
-        return self.activation(x)
+        return self.model(x)
+
 
 model = MyResNet50()
 
@@ -89,11 +89,11 @@ for epoch in range(config['train']['num_epochs']):
     total = 0
     with torch.no_grad():
         for images, labels in val_loader:
-            images, labels = images.to('cuda'), labels.to('cuda')
-            outputs = model(images)
-            _, predicted = torch.max(outputs, 1)
+            images, labels = images.to(device), labels.to(device)
+            outputs = torch.sigmoid(model(images))
+            prediction = (outputs >= 0.5).float()
+            correct += (prediction == labels).sum().item()
             total += labels.size(0)
-            correct += (predicted == labels).sum().item()
 
     accuracy = 100 * correct / total
     print(f"Validation Accuracy: {accuracy}%")

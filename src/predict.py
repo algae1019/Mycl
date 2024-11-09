@@ -19,12 +19,12 @@ class MyResNet50(nn.Module):
     
     def forward(self, x):
         x = self.model(x)
-        return x
     
 
     # 슬라이딩 윈도우 예측 함수
 def sliding_window_prediction(model, image_path, patch_size=50, stride=25):
     model.eval()
+    device = next(model.parameters()).device
 
     # 이미지 불러오기 및 전처리
     image = Image.open(image_path)
@@ -33,7 +33,7 @@ def sliding_window_prediction(model, image_path, patch_size=50, stride=25):
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    image_tensor = transform(image).unsqueeze(0)
+    image_tensor = transform(image).unsqueeze(0).to(device)
 
     # 패치 예측 결과를 저장할 맵 초기화
     output_map = np.zeros((image_tensor.shape[2], image_tensor.shape[3]))
@@ -43,12 +43,11 @@ def sliding_window_prediction(model, image_path, patch_size=50, stride=25):
         for y in range(0, image_tensor.shape[2] - patch_size + 1, stride):
             for x in range(0, image_tensor.shape[3] - patch_size + 1, stride):
                 # 현재 위치에서 패치 추출
-                patch = image_tensor[:, :, y:y + patch_size, x:x + patch_size]
-                patch = patch.to(device)
+                patch = image_tensor[:, :, y:y + patch_size, x:x + patch_size].to(device)
                 
                 # 패치 예측 수행
                 output = model(patch)
-                prediction = torch.sigmoid(output).item()  # 확률로 변환
+                prediction = torch.sigmoid(output).item()
 
                 # 패치 중앙 위치에 예측 결과 저장
                 center_y, center_x = y + patch_size // 2, x + patch_size // 2
