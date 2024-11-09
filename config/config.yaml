@@ -9,4 +9,5 @@ model:
 paths:
   train_data: "data\\train"
   val_data: "data\\val"
+  test_data: "data\\test"
   model_save_path: "models\\resnet50_mycl.pth"

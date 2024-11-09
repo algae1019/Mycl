@@ -8,7 +8,7 @@ import os
 
 # 프로젝트 루트 디렉터리 설정
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print("프로젝트 루트 경로:", PROJECT_ROOT)  # 루트 경로 확인
+#print("프로젝트 루트 경로:", PROJECT_ROOT)  # 루트 경로 확인
 
 def get_path(*subdirs):
     """

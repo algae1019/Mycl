@@ -4,11 +4,6 @@
 
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from utils import get_path
-
-
-train_data_path = get_path("data", "train")
-val_data_path = get_path("data", "val")
 
 
 def get_loader(batch_size, train_data_path, val_data_path):
@@ -25,7 +20,7 @@ def get_loader(batch_size, train_data_path, val_data_path):
     val_dataset = datasets.ImageFolder(root=val_data_path, transform=transform)
 
     # 데이터 로더 설정
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=1)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, num_workers=1)
 
     return train_loader, val_loader

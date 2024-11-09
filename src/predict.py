@@ -18,11 +18,11 @@ class MyResNet50(nn.Module):
         self.model.fc = nn.Linear(self.model.fc.in_features, 2)
     
     def forward(self, x):
-        x = self.model(x)
+        return self.model(x)
     
 
-    # 슬라이딩 윈도우 예측 함수
-def sliding_window_prediction(model, image_path, patch_size=50, stride=25):
+# 슬라이딩 윈도우 예측 함수
+def sliding_window_prediction(model, image_path, patch_size=9, stride=5):
     model.eval()
     device = next(model.parameters()).device
 
@@ -47,32 +47,35 @@ def sliding_window_prediction(model, image_path, patch_size=50, stride=25):
                 
                 # 패치 예측 수행
                 output = model(patch)
-                prediction = torch.sigmoid(output).item()
+                prediction = torch.sigmoid(output)
+                print(prediction[0, 0])
 
                 # 패치 중앙 위치에 예측 결과 저장
                 center_y, center_x = y + patch_size // 2, x + patch_size // 2
-                output_map[center_y, center_x] = prediction
+                output_map[center_y, center_x] = prediction[0, 0]
 
     return output_map
 
 
-# 모델 로드 및 경로 설정
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model = MyResNet50()
-model_load_path = get_path("models", "resnet50_mycl.pth")
-model.load_state_dict(torch.load(model_load_path, map_location=device))
-model = model.to(device)
-print(f"모델 로드 완료: {model_load_path}")
+if __name__ == '__main__':
+    # 모델 로드 및 경로 설정
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model = MyResNet50()
+    model_load_path = get_path("models", "resnet50_mycl.pth")
+    model.load_state_dict(torch.load(model_load_path, map_location=device))
+    model = model.to(device)
+    print(f"모델 로드 완료: {model_load_path}")
 
 
-# 예측 수행
-test_image_path = get_path("data", "test", "sample_image.jpg")
-output_map = sliding_window_prediction(model, test_image_path, patch_size=50, stride=25)
-print("슬라이딩 윈도우 예측 결과 맵:")
-print(output_map)
+    # 예측 수행
+    test_image_path = get_path("data", "test", "fire", "image_964791745.jpg")
+    output_map = sliding_window_prediction(model, test_image_path, patch_size=9, stride=2)
+    print("슬라이딩 윈도우 예측 결과 맵:")
+    print(output_map)
 
-
-# 예측 결과 저장
-output_predictions_path = get_path("outputs", "predictions")
-np.save(output_predictions_path, output_map)
-print(f"예측 결과 저장 완료: {output_predictions_path}")
+    
+    # 예측 결과 저장
+    file_name = "prediction_2"
+    output_predictions_path = get_path("outputs", "predictions", f"{file_name}")
+    np.save(output_predictions_path, output_map)
+    print(f"예측 결과 저장 완료: {output_predictions_path}")
