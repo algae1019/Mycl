@@ -9,6 +9,7 @@ from torchvision import models
 import yaml
 from data_loader import get_loader
 from utils import get_path
+from tqdm import tqdm
 
 
 # 설정 파일 .yaml 로드
@@ -70,16 +71,20 @@ optimizer = optim.Adam(model.model.fc.parameters(), lr=config['train']['learning
 for epoch in range(config['train']['num_epochs']):
     model.train()
     running_loss = 0.0
-    for images, labels in train_loader:
-        images, labels = images.to('cuda'), labels.to('cuda')
 
-        optimizer.zero_grad()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+    with tqdm(train_loader, unit='batch') as tepoch:
+        tepoch.set_description(f"Epoch [{epoch+1}/{config['train']['num_epochs']}]")
+        for images, labels in tepoch:
+            images, labels = images.to('cuda'), labels.to('cuda')
 
-        running_loss += loss.item()
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            tepoch.set_postfix(loss=running_loss / len(train_loader))
 
     print(f"Epoch [{epoch+1}/{config['train']['num_epochs']}], Loss: {running_loss/len(train_loader)}")
 
