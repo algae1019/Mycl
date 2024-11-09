@@ -52,7 +52,7 @@ if __name__ == '__main__':
         param.requires_grad = False
 
 
-    # 마지막 FC 레이어는 학습할 수 있도록 설정
+    # 마지막 FC 레이어는 학습  설정
     for param in model.model.fc.parameters():
         param.requires_grad = True
 

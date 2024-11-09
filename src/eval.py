@@ -40,7 +40,7 @@ def preprocess_image(image_path):
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     image = Image.open(image_path)
-    return transform(image).unsqueeze(0).to(device)  # 배치 차원 추가
+    return transform(image).unsqueeze(0).to(device)
 
 
 # 예측 함수
