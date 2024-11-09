@@ -38,9 +38,19 @@ model.fc = nn.Linear(model.fc.in_features, config['model']['num_classes'])
 model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
 
 
+# 특정 레이어 고정
+for param in model.parameters():
+    param.requires_grad = False
+
+
+# 마지막 FC 레이어는 학습할 수 있도록 설정
+for param in model.fc.parameters():
+    param.requires_grad = True
+
+
 # 손실 함수 및 옵티마이저 정의
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=config['train']['learning_rate'])
+optimizer = optim.Adam(model.fc.parameters(), lr=config['train']['learning_rate'])
 
 
 # 모델 훈련
