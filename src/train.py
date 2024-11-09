@@ -32,11 +32,19 @@ train_loader, val_loader = get_loader(
     )
 
 
-# 모델 정의 및 수정
-model = models.resnet50(pretrained=config['model']['pretrained'])
-model.fc = nn.Linear(model.fc.in_features, config['model']['num_classes'])
-model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
+# 모델 정의 및 수정 (FC 레이어 정의)
+class MyResNet50(nn.Module):
+    def __init__(self):
+        super(MyResNet50, self).__init__()
+        self.model = models.resnet50(pretrained=config['model']['pretrained'])
+        self.model.fc = nn.Linear(self.model.fc.in_features, config['model']['num_classes'])
+        self.activation = nn.Sigmoid
 
+    def forward(self, x):
+        x = self.model(x)
+        return self.activation(x)
+
+model = MyResNet50()
 
 # 특정 레이어 고정
 for param in model.parameters():
@@ -44,13 +52,18 @@ for param in model.parameters():
 
 
 # 마지막 FC 레이어는 학습할 수 있도록 설정
-for param in model.fc.parameters():
+for param in model.model.fc.parameters():
     param.requires_grad = True
 
 
+# 모델을 GPU or CPU 로 이동
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model = model.to(device)
+
+
 # 손실 함수 및 옵티마이저 정의
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.fc.parameters(), lr=config['train']['learning_rate'])
+criterion = nn.BCEWithLogitsLoss()
+optimizer = optim.Adam(model.model.fc.parameters(), lr=config['train']['learning_rate'])
 
 
 # 모델 훈련
@@ -87,3 +100,4 @@ for epoch in range(config['train']['num_epochs']):
 
 # 모델 저장
 torch.save(model.state_dict(), config['paths']['model_save_path'])
+print(f"모델 저장 완료 : {model_save_path}")

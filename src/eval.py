@@ -5,16 +5,30 @@
 import torch
 from torchvision import models, transforms
 from PIL import Image
-from utils import get_path
 import torch.nn as nn
+from utils import get_path
 
 
-# 모델 불러오기
-model = models.resnet50(pretrained=False)
-model.fc = nn.Linear(model.fc.in_features, 2)
+# 커스텀 모델 정의
+class MyResNet50(nn.Module):
+    def __init__(self):
+        super(MyResNet50, self).__init__()
+        self.model = models.resnet50(pretrained=False)
+        self.model.fc = nn.Linear(self.model.fc.in_features, 2)
+    
+    def forward(self, x):
+        x = self.model(x)
+        return x
+
+
+# 모델 불러오기 및 설정
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model = MyResNet50()
 model_load_path = get_path("models", "resnet50_mycl.pth")
-model.load_state_dict(torch.load(model_load_path))
+model.load_state_dict(torch.load(model_load_path, map_location=device))
+model = model.to(device)
 model.eval()
+print(f"모델 로드 완료: {model_load_path}")
 
 
 # 이미지 전처리 함수
@@ -26,8 +40,7 @@ def preprocess_image(image_path):
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     image = Image.open(image_path)
-
-    return transform(image).unsqueeze(0)  # 배치 차원 추가
+    return transform(image).unsqueeze(0).to(device)  # 배치 차원 추가
 
 
 # 예측 함수
