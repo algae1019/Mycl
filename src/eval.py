@@ -1,3 +1,7 @@
+'''
+모델 평가
+'''
+
 import torch
 from torchvision import models, transforms
 from PIL import Image
