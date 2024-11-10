@@ -48,18 +48,18 @@ def predict(image_path):
     image = preprocess_image(image_path)
     with torch.no_grad():
         output = model(image)
-        probability = torch.sigmoid(output).item()
+        probability = torch.sigmoid(output)
         return probability
     
 
 # 테스트 예측
-test_image_path = get_path("data", "val", "fire", "sample_fire_image.jpg")
+test_image_path = get_path("data", "val", "fire", "image_9999486531.jpg")
 fire_probability = predict(test_image_path)
 print(f"Fire Probability: {fire_probability}")
 
 
 # 로그 파일에 저장
-logs_path = get_path("outputs", "logs")
+logs_path = get_path("outputs", "logs", "log1")
 with open(logs_path, "w") as f:
     f.write(f"Fire Probability: {fire_probability}\n")
 print(f"평가 결과 저장 완료: {logs_path}")

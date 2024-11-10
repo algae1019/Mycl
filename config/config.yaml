@@ -1,7 +1,7 @@
 train:
   batch_size: 32
-  num_epochs: 10
-  learning_rate: 0.001
+  num_epochs: 20
+  learning_rate: 0.01
 model:
   model_name: resnet50
   pretrained: true

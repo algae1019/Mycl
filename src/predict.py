@@ -48,7 +48,7 @@ def sliding_window_prediction(model, image_path, patch_size=9, stride=5):
                 
                 # 패치 예측 수행
                 output = model(patch)
-                prediction = torch.sigmoid(output)
+                prediction = torch.softmax(output, dim=1)
                 print(prediction[0, 0])
 
                 # 패치 중앙 위치에 예측 결과 저장
@@ -69,8 +69,8 @@ if __name__ == '__main__':
 
 
     # 예측 수행
-    test_image_path = get_path("data", "test", "fire", "image_964791745.jpg")
-    output_map = sliding_window_prediction(model, test_image_path, patch_size=16, stride=2)
+    test_image_path = get_path("data", "test", "fire", "test01.jpg")
+    output_map = sliding_window_prediction(model, test_image_path, patch_size=9, stride=2)
     print("슬라이딩 윈도우 예측 결과 맵:")
     print(output_map)
 
